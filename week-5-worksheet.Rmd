@@ -1,0 +1,130 @@
+---
+title: "Week 5: In-class worksheet"
+output:
+  html_document:
+    toc: FALSE
+    theme: cerulean
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,message = FALSE)
+library(ggplot2)
+library(tidyverse)
+library(dplyr)
+library(gapminder)
+library(nycflights13)
+library(socviz)
+
+```
+
+# Part I
+
+## Fig 1
+
+```{r A}
+ggplot(gapminder,aes(gdpPercap,lifeExp))+
+  geom_point(alpha=0.25)+
+  geom_smooth(color="red")+
+  labs(subtitle="Use 'gapminder' dataset in the gapminder package")
+```
+
+## Fig 2
+
+```{r B}
+ggplot(gapminder,aes(gdpPercap,lifeExp,color=continent))+geom_point(alpha=0.25)+geom_smooth()+scale_x_log10()+labs(subtitle="Use 'gapminder' dataset in the gapminder package")
+```
+
+## Fig 3
+
+```{r D}
+ggplot(gapminder,aes(gdpPercap,lifeExp))+geom_point(aes(color=continent),alpha=0.25)+geom_smooth(method="lm",color="red",linetype="longdash")+scale_x_log10()+labs(subtitle="Use 'gapminder' dataset in the gapminder package")
+
+```
+
+## Fig 4
+
+```{r C}
+ggplot(gapminder,aes(gdpPercap,lifeExp,color=continent))+geom_point(alpha=0.25)+geom_smooth(method="lm",se=FALSE)+scale_x_log10()+labs(subtitle="Use 'gapminder' dataset in the gapminder package")
+
+```
+
+## Fig 5
+
+```{r C1}
+ggplot(gapminder,aes(gdpPercap,lifeExp))+geom_point(alpha=0.25,color="red")+geom_smooth(method="lm",color="darkgreen")+scale_x_log10()+facet_wrap(~continent)+
+  labs(subtitle="Use 'gapminder' dataset in the gapminder package.\nUse 'light' theme.")+theme_light()
+```
+
+## Fig 6
+
+```{r D9}
+ggplot(gapminder,aes(year,gdpPercap,group=country))+
+  geom_line(color="grey")+
+  geom_smooth(aes(group=continent),color="blue")+
+  facet_wrap(~continent,ncol=5)+
+  labs(subtitle="Use 'gapminder' dataset in the gapminder package.\nNote that the overlapping labels on the x-axis is not good but we can ignore that for now.\nEach grey line represents a country. The blue line is aggregate for the entire continent.")
+```
+
+# Part II
+
+## Fig 7
+
+```{r F}
+
+ggplot(filter(flights,carrier=="B6"|carrier=="MQ"|carrier=="WN"))+geom_bar(aes(carrier,fill=carrier))+labs(subtitle="Using 'flights' dataset in nycflights13 package. \nThe bar plot compares flights in the dataset operated by three specific carriers")
+
+```
+
+### Fig 8
+
+```{r F1}
+# ggplot(titanic,aes(fate,percent,fill=sex))+geom_col(position = "dodge")
+ggplot(titanic,aes(fate,percent,fill=sex))+geom_bar(position = "dodge",stat="identity")+
+  labs(subtitle="Use 'titanic' dataset in the socviz package")
+```
+
+## Fig 9
+
+```{r E}
+
+ggplot(flights)+geom_histogram(aes(distance),fill="yellow",color="orange",alpha=0.8,binwidth = 1000)+labs(subtitle="Use 'flights' dataset in nycflights13 package. \nThis histogram is of all the flights in the dataset, showing the distance they travel.")
+
+```
+
+## Fig 10
+
+```{r G}
+filter(flights,carrier=="AA",dep_delay>60) %>%
+  ggplot()+geom_bar(aes(dest))+labs(subtitle="Using 'flights' dataset in nycflights13 package. \nConsider flights where the carrier was American Airlines ('AA') and the delay was more \nthan an hour. \nThe barplot shows where these flights were headed to, and uses the 'minimal' theme.")+theme_minimal()
+```
+
+## Fig 11
+
+```{r H}
+filter(flights,carrier=="AA",dep_delay>60) %>% group_by(dest) %>% summarise(flights=n()) %>%
+  ggplot()+
+  geom_bar(aes(reorder(dest,-flights),flights),stat = "identity")+
+  labs(x="dest")+
+  labs(subtitle="Using 'flights' dataset in nycflights13 package. \nThis is identical to the previous chart, but the bars are arranged in descending order. You\ncan do with with reorder().")+
+  theme_minimal()
+```
+
+## Fig 12
+
+```{r I, include=FALSE}
+perf <- flights %>% group_by(carrier) %>% summarize(total=n(),delayed=sum(dep_delay>0,na.rm = TRUE),canceled=sum(is.na(dep_delay)))
+```
+
+```{r J}
+perf %>% 
+  mutate(on_time=total-delayed-canceled) %>%
+  pivot_longer(c("on_time","delayed","canceled"),names_to = "status",values_to = "value") %>%
+  ggplot()+geom_bar(aes(carrier,value,fill=status),stat = "identity",position="fill")+
+  labs(subtitle="Using 'flights' dataset in nycflights13 package.\n 'Delay' means a delay in departure.")
+```
+
+```{r J-alternative, include=FALSE}
+flights %>% mutate(status=case_when(dep_delay>0~"delayed",dep_delay<=0~"on_time",TRUE~"canceled")) %>% select(carrier,status) %>% ggplot(aes(carrier,fill =status))+geom_bar(position="fill")
+
+```
+
