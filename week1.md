@@ -2,4 +2,4 @@
 layout: default
 ---
 
-This is the page for Week 2.
+This is the page for Week 1.
