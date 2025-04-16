@@ -2,6 +2,8 @@
 layout: default
 ---
 
+![welcome](https://en.wikipedia.org/wiki/Wikipedia:Featured_pictures#/media/File:Comatricha_nigra_176600092.jpg)
+
 # Website for J634
 
 Hi, welcome to this website.
