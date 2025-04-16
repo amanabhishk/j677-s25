@@ -15,3 +15,5 @@ Hi, welcome to this website.
 ## Part 2
 
 Adding some additional webpages.
+Visit [week 1](week1.md)
+
